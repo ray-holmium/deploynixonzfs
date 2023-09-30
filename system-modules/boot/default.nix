@@ -44,11 +44,11 @@ in {
     };
     partitionScheme = mkOption {
       default = {
-        biosBoot = "-part5";
+        biosBoot = "-part2";
         efiBoot = "-part1";
         swap = "-part4";
-        bootPool = "-part2";
-        rootPool = "-part3";
+        bootPool = "-part3";
+        rootPool = "-part5";
       };
       description = "Describe on disk partitions";
       type = types.attrsOf types.str;
@@ -67,10 +67,10 @@ in {
   config = mkIf (cfg.enable) (mkMerge [
     {
       zfs-root.fileSystems.datasets = {
+        "rpool/nixos/keys" = "/keys";
+        "rpool/nixos/nix" = "/nix";
         "rpool/nixos/home" = mkDefault "/home";
-        "rpool/nixos/var/lib" = mkDefault "/var/lib";
-        "rpool/nixos/var/log" = mkDefault "/var/log";
-        "bpool/nixos/root" = "/boot";
+        "bpool/boot" = "/boot";
       };
     }
     (mkIf (!cfg.immutable) {
@@ -116,8 +116,7 @@ in {
         loader = {
           efi = {
             canTouchEfiVariables = (if cfg.removableEfi then false else true);
-            efiSysMountPoint = ("/boot/efis/" + (head cfg.bootDevices)
-              + cfg.partitionScheme.efiBoot);
+            efiSysMountPoint = ("/efi");
           };
           generationsDir.copyKernels = true;
           grub = {
@@ -129,7 +128,7 @@ in {
             zfsSupport = true;
             extraInstallCommands = (toString (map (diskName: ''
               set -x
-              ${pkgs.coreutils-full}/bin/cp -r ${config.boot.loader.efi.efiSysMountPoint}/EFI /boot/efis/${diskName}${cfg.partitionScheme.efiBoot}
+              ${pkgs.coreutils-full}/bin/cp -r ${config.boot.loader.efi.efiSysMountPoint}/EFI ${diskName}${cfg.partitionScheme.efiBoot}
               set +x
             '') (tail cfg.bootDevices)));
           };
