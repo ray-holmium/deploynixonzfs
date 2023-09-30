@@ -1,18 +1,15 @@
 * Install NixOS with ZFS as root filesystem
-This repo contains a minimal set of configuration for installing
-NixOS, using ZFS as root filesystem.
+WARNING!: This project is in early-alpha and is not ready for deployment on your system.
+I am a n00b coder and have not tested this beyond my own two systems. Also, the code badly needs to be cleaned up.
+DO NOT USE, especially deploynixonzfs.sh, unless you are a wizard and you assess my code for mistakes prior to use.
+I will remove this warning if/when the project is in a beta state. Cheers!
 
-ZFS is a modern filesystem with many features such as snapshot,
-self-healing and pooled storage, see [[https://openzfs.org/wiki/Main_Page#Introduction_to_OpenZFS][Introduction]] for details.
+*** NixOS on ZFS simplified
 
-For using this repo on your computer, see [[https://openzfs.github.io/openzfs-docs/Getting%20Started/NixOS/Root%20on%20ZFS.html][Documentation]].
+This is my personal deployment script for installing NixOS with ZFS, based on ne9z's tremendous [[https://openzfs.github.io/openzfs-docs/Getting%20Started/NixOS/Root%20on%20ZFS.html][instructions]] 
+and [[https://github.com/ne9z/dotfiles-flake][template]] on openZFS. I found myself typing his suggested commands frequently
+and wanted to cut back on dreaded finger strain, so I tripled my efforts and wrote a big script instead.
+Ideally I will get this cleaned up to the point where it's good for general use, 
+though I still highly recommend that newcomers to NixOS follow ne9z's method as you will be robbing yourself
+of an excellent learning opportunity by automating this process.
 
-Upon initial installation, only the bootloader, mountpoints and root
-password are configured.
-
-- Refer to =man configuration.nix= for available options;
-- Search for available packages with [[https://search.nixos.org/packages][Package Search]];
-- Search for options with [[https://search.nixos.org/options][Option Search]].
-
-[[https://codeberg.org/m0p/dotfiles][My personal dotfiles repo]] contains an example of desktop configuration
-based on sway, tmux and Emacs.
