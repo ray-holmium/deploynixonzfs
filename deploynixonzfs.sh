@@ -453,8 +453,8 @@ echo "Cloning into custom NixOS repository, copying new system config to disk...
 
 mkdir -p /mnt/etc
 
-git clone --branch holmes \
-    https://github.com/ray-holmium/nixzfs.git /mnt/etc/nixos
+git clone --branch deploy \
+    https://github.com/ray-holmium/deploynixonzfs /mnt/etc/nixos
 
 cd /mnt/etc/nixos
 
