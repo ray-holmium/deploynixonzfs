@@ -6,10 +6,9 @@ I will remove this warning if/when the project is in a beta state. Cheers!
 
 *** NixOS on ZFS simplified
 
-This is my personal deployment script for installing NixOS with ZFS, based on ne9z's tremendous [[https://openzfs.github.io/openzfs-docs/Getting%20Started/NixOS/Root%20on%20ZFS.html][instructions]] 
+This is my personal deployment script for installing NixOS with ZFS root, based on ne9z's tremendous [[https://openzfs.github.io/openzfs-docs/Getting%20Started/NixOS/Root%20on%20ZFS.html][instructions]] 
 and [[https://github.com/ne9z/dotfiles-flake][template]] on openZFS. I found myself typing his suggested commands frequently
 and wanted to cut back on dreaded finger strain, so I tripled my efforts and wrote a big script instead.
 Ideally I will get this cleaned up to the point where it's good for general use, 
-though I still highly recommend newcomers to NixOS follow ne9z's method as you will be robbing yourself
-of an excellent learning opportunity by automating this process.
+though I still highly recommend newcomers to NixOS follow ne9z's method manual method because it is an excellent learning opportunity.
 
