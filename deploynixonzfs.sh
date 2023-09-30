@@ -36,8 +36,8 @@ done
 
 ## Error handler ##
 
-### need to call second script to handle errors and cleanup
-##  because /mnt cannot unmount until this script closes
+# need to call second script to handle errors and cleanup
+# because /mnt cannot unmount until this script closes
 
 cleanup() {
     rm -rf ~/.config/nix || true
@@ -168,11 +168,17 @@ trap handle_sigint SIGINT
 set -e
 set -o pipefail
 
-## Additional user interaction ##
+## Internet check ##
 
-read -rp "Please enter a hostname for this system: " HOSTNAME
+echo "This installer requires an internet connection. Checking connectivity now..."
 
-read -rp "Please enter a username: " USERNAME
+ping -c 1 1.1.1.1 >/dev/null 2>&1
+if [ $? -eq 0 ]; then
+    echo "Internet connectivity is available."
+else
+    echo "No Internet connectivity. Exiting."
+    exit 1
+fi
 
 ## Prepare USB ##
 
@@ -365,6 +371,10 @@ create_encrypted_dataset() {
     passphrase_info+="${dataset}: ${passphrase}\n"
 }
 
+# currently the vault dataset does not unlock properly on boot after install
+# this is possibly because the keyfile is not being copied to the initramfs
+# or is otherwise not available at boot time. This needs to be investigated.
+
 mkdir /mnt/vault
 create_encrypted_dataset "rpool/vault"
 snapshot_dataset "rpool/vault" "pre_install"
@@ -379,18 +389,7 @@ mkswap /dev/mapper/swap_encrypted
 swapon /dev/mapper/swap_encrypted
 
 #### Install NixOS ####
-
-## Internet check ##
-
-echo "This installer requires an internet connection. Checking connectivity now..."
-
-ping -c 1 1.1.1.1 >/dev/null 2>&1
-if [ $? -eq 0 ]; then
-    echo "Internet connectivity is available."
-else
-    echo "No Internet connectivity. Exiting."
-    exit 1
-fi
+# script could be split here
 
 ## git/Hub authentication ##
 
@@ -483,9 +482,20 @@ else
     git branch -m main
 fi
 
-## Set local hardware requirements ##
+## System setup ##
 
-echo "Importing local hardware requirements into new NixOS configuration ..."
+#set hostname
+read -rp "Please enter a hostname for this system: " HOSTNAME
+
+#set username
+read -rp "Please enter a username: " USERNAME
+
+#set user password
+echo "Please enter a password for the user account."
+userPwd=$(mkpasswd -m SHA-512)
+sed -i \
+    "s|userHash_placeholder|${userPwd}|" \
+    /mnt/etc/nixos/system-modules/users/"${USERNAME}".nix
 
 #apply chosen hostname
 cp -r /mnt/etc/nixos/hosts/exampleHost /mnt/etc/nixos/hosts/"${HOSTNAME}"
@@ -498,25 +508,17 @@ sed -i "s|"exampleUser"|"${USERNAME}"|g" /mnt/etc/nixos/flake.nix
 sed -i "s|"exampleUser"|"${USERNAME}"|g" /mnt/etc/nixos/hosts/"${HOSTNAME}"/default.nix
 sed -i "s|"exampleUser"|"${USERNAME}"|g" /mnt/etc/nixos/system-modules/users/default.nix
 sed -i "s|"exampleUser"|"${USERNAME}"|g" /mnt/etc/nixos/system-modules/users/"${USERNAME}".nix
-
 sed -i "s|"exampleUser@exampleHost"|"${USERNAME}@${HOSTNAME}"|g" /mnt/etc/nixos/flake.nix
 
-#set user password
+## Set local hardware requirements ##
 
-echo "Please enter a password for the user account."
-userPwd=$(mkpasswd -m SHA-512)
-sed -i \
-    "s|userHash_placeholder|${userPwd}|" \
-    /mnt/etc/nixos/system-modules/users/"${USERNAME}".nix
+echo "Importing local hardware requirements into new NixOS configuration ..."
 
-#apply chosen disk id
-#sed -i "s|/dev/disk/by-id/|${DISK_ID%-*}/|" /mnt/etc/nixos/hosts/"${HOSTNAME}"/default.nix
-
-##set boot devices
+#set boot devices
 diskName="\"${DISK_ID##*/}\""
 sed -i "s|\"bootDevices_placeholder\"|${diskName}|g" /mnt/etc/nixos/hosts/"${HOSTNAME}"/default.nix
 
-## set hostid
+#set hostid
 sed -i "s|\"abcd1234\"|\"$(head -c4 /dev/urandom | od -A none -t x4 | sed 's| ||g' || true)\"|g" /mnt/etc/nixos/hosts/"${HOSTNAME}"/default.nix
 
 sed -i "s|\"x86_64-linux\"|\"$(uname -m || true)-linux\"|g" /mnt/etc/nixos/flake.nix
@@ -529,11 +531,7 @@ echo 'print STDOUT "$initrdAvailableKernelModules"' >>./nixos-generate-config
 kernelModules="$(./nixos-generate-config --show-hardware-config --no-filesystems | tail -n1 || true)"
 sed -i "s|\"kernelModules_placeholder\"|${kernelModules}|g" /mnt/etc/nixos/hosts/"${HOSTNAME}"/default.nix
 
-
 sed -i '$a fileSystems."/mnt" = {\n  device = "rpool";\n  fsType = "zfs";\n};' /etc/nixos/configuration.nix
-
-## enable networkmanager
-#sed -i 's/networking.networkmanager.enable = false;/networking.networkmanager.enable = true;/' /etc/nixos/configuration.nix
 
 echo "Updating NixOS flake.lock file to apply configuration changes to track latest system version ..."
 
@@ -570,11 +568,15 @@ nixos-install \
 
 echo "Success! Installation complete"
 
-cleanup
+## Epilogue ##
+
+# WARNING: this function does not correctly unmount /mnt
+# or export zpools. This is because the script is still running.
 
 read -rp "Would you like to reboot now? (y/n) " response
 echo
 
 if [[ $response =~ ^[Yy]$ ]]; then
+    cleanup
     reboot
 fi
