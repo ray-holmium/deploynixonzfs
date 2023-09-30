@@ -10,6 +10,6 @@ This is my personal deployment script for installing NixOS with ZFS, based on ne
 and [[https://github.com/ne9z/dotfiles-flake][template]] on openZFS. I found myself typing his suggested commands frequently
 and wanted to cut back on dreaded finger strain, so I tripled my efforts and wrote a big script instead.
 Ideally I will get this cleaned up to the point where it's good for general use, 
-though I still highly recommend that newcomers to NixOS follow ne9z's method as you will be robbing yourself
+though I still highly recommend newcomers to NixOS follow ne9z's method as you will be robbing yourself
 of an excellent learning opportunity by automating this process.
 
