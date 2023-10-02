@@ -516,7 +516,7 @@ sed -i \
 echo "Importing local hardware requirements into new NixOS configuration ..."
 
 #set boot devices
-diskName="\"${DISK_ID##*/}\""
+diskName="\"${DISK_ID##*/}-part1\""
 sed -i "s|\"bootDevices_placeholder\"|${diskName}|g" /mnt/etc/nixos/hosts/"${HOSTNAME}"/default.nix
 
 #set hostid
@@ -536,9 +536,6 @@ sed -i '$a fileSystems."/mnt" = {\n  device = "rpool";\n  fsType = "zfs";\n};' /
 
 echo "Updating NixOS flake.lock file to apply configuration changes to track latest system version ..."
 
-nix flake update --extra-experimental-features nix-command --extra-experimental-features flakes --commit-lock-file \
-    "git+file:///mnt/etc/nixos"
-
 ## Commit and push hardware changes ##
 
 if [[ "$gh_choice" =~ ^[Yy] ]]; then
@@ -557,6 +554,9 @@ else
     git add .
     git commit -asm "set local hardware"
 fi
+
+nix flake update --extra-experimental-features nix-command --extra-experimental-features flakes --commit-lock-file \
+    "git+file:///mnt/etc/nixos"
 
 ## Final installation of configured system ##
 
