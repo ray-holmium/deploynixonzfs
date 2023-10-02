@@ -59,8 +59,8 @@
 
         # configuration input
           (import ./hosts/${hostName} {
-          #  system = system;
-            pkgs = nixpkgs.legacyPackages.${system};
+            system = system;
+            #pkgs = nixpkgs.legacyPackages.${system};
              pkgs = import nixpkgs {
                config = { allowUnfree = true; };
                inherit system;
