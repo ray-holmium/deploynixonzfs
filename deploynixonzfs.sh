@@ -516,7 +516,7 @@ sed -i \
 echo "Importing local hardware requirements into new NixOS configuration ..."
 
 #set boot devices
-diskName="\"${DISK_ID##*/}-part1\""
+diskName="\"${DISK_ID##*/}-part2\""
 sed -i "s|\"bootDevices_placeholder\"|${diskName}|g" /mnt/etc/nixos/hosts/"${HOSTNAME}"/default.nix
 
 #set hostid
