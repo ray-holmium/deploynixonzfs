@@ -68,9 +68,9 @@
           }));
     in {
       nixosConfigurations = {
-        exampleHost = mkHost "exampleHost" "x86_64-linux" inputs;
+        holmium = mkHost "holmium" "x86_64-linux" inputs;
       };
-      homeConfigurations."exampleUser@exampleHost" = home-manager.lib.homeManagerConfiguration {
+      homeConfigurations."ray@holmium" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
           hyprland.homeManagerModules.default

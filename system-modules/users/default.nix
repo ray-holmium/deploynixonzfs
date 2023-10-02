@@ -1,3 +1,3 @@
 { config, lib, pkgs, ... }: {
-  imports = [ ./exampleUser.nix ];
+  imports = [ ./ray.nix ];
 }
