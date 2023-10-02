@@ -9,8 +9,8 @@
   inherit pkgs system;
   zfs-root = {
     boot = {
-      devNodes = "/dev/disk/by-id/";
-      bootDevices = [ "/mnt/efi" ];
+      devNodes = "/dev/";
+      bootDevices = [ "nvme0n1" ];
       immutable = false;
       availableKernelModules = [ "kernelModules_placeholder" ];
       removableEfi = true;
