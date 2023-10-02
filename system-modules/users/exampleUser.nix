@@ -3,9 +3,9 @@
 with lib;
 
 {
-  options.users.sherlock.enable = mkEnableOption "User account and configurations";
+  options.users.exampleUser.enable = mkEnableOption "User account and configurations";
 
-  config = mkIf config.users.sherlock.enable {
+  config = mkIf config.users.exampleUser.enable {
 
     # imports = [  ];
 
