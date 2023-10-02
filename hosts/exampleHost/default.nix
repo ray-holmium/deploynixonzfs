@@ -10,7 +10,7 @@
   zfs-root = {
     boot = {
       devNodes = "/dev/";
-      bootDevices = [ "nvme0n1p2" ];
+      bootDevices = [ "nvme0n1p2/mnt/bios" ];
       immutable = false;
       availableKernelModules = [ "kernelModules_placeholder" ];
       removableEfi = true;
