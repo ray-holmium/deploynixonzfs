@@ -221,7 +221,7 @@ BOOT_END="$((BOOT_SIZE + BIOS_SIZE + EFI_SIZE))MiB"
 SWAP_START="${BOOT_END}"
 SWAP_END="$((SWAP_SIZE + BOOT_SIZE + BIOS_SIZE + EFI_SIZE))MiB"
 RPOOL_START="${SWAP_END}"
-RPOOL_END="100%"
+RPOOL_END="204800 MiB"
 
 echo "Partitioning disk ..."
 
@@ -490,13 +490,6 @@ read -rp "Please enter a hostname for this system: " HOSTNAME
 #set username
 read -rp "Please enter a username: " USERNAME
 
-#set user password
-echo "Please enter a password for the user account."
-userPwd=$(mkpasswd -m SHA-512)
-sed -i \
-    "s|userHash_placeholder|${userPwd}|" \
-    /mnt/etc/nixos/system-modules/users/"${USERNAME}".nix
-
 #apply chosen hostname
 cp -r /mnt/etc/nixos/hosts/exampleHost /mnt/etc/nixos/hosts/"${HOSTNAME}"
 sed -i "s|"exampleHost"|"${HOSTNAME}"|g" /mnt/etc/nixos/hosts/"${HOSTNAME}"/default.nix
@@ -509,6 +502,14 @@ sed -i "s|"exampleUser"|"${USERNAME}"|g" /mnt/etc/nixos/hosts/"${HOSTNAME}"/defa
 sed -i "s|"exampleUser"|"${USERNAME}"|g" /mnt/etc/nixos/system-modules/users/default.nix
 sed -i "s|"exampleUser"|"${USERNAME}"|g" /mnt/etc/nixos/system-modules/users/"${USERNAME}".nix
 sed -i "s|"exampleUser@exampleHost"|"${USERNAME}@${HOSTNAME}"|g" /mnt/etc/nixos/flake.nix
+
+#set user password
+
+echo "Please enter a password for the user account."
+userPwd=$(mkpasswd -m SHA-512)
+sed -i \
+    "s|userHash_placeholder|${userPwd}|" \
+    /mnt/etc/nixos/system-modules/users/"${USERNAME}".nix
 
 ## Set local hardware requirements ##
 

@@ -59,11 +59,11 @@
 
         # configuration input
           (import ./hosts/${hostName} {
-            system = system;
-          #  pkgs = nixpkgs.legacyPackages.${system};
-          #   pkgs = import nixpkgs {
-          #     config = { allowUnfree = true; };
-          #     inherit system;
+          #  system = system;
+            pkgs = nixpkgs.legacyPackages.${system};
+             pkgs = import nixpkgs {
+               config = { allowUnfree = true; };
+               inherit system;
              };
           }));
     in {
@@ -73,8 +73,8 @@
       homeConfigurations."exampleUser@exampleHost" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         modules = [
-        #  hyprland.homeManagerModules.default
-        #  {wayland.windowManager.hyprland.enable = true;}
+          hyprland.homeManagerModules.default
+          {wayland.windowManager.hyprland.enable = true;}
         ];
       };
     };
